@@ -1,25 +1,46 @@
+//handling only each individual enemy
+//敵
 export default class Enemy {
-  constructor(gameWidth, gameHeight) {
-    this.gameWidth = gameWidth;
-    this.gameHeight = gameHeight;
-    this.speed = Math.random() * 4 + 1; //左へ移動するスピード
-    this.width = 40; //幅
-    this.height = 40; //高さ
-    this.x = canvas.width; //x軸の初期位置
-    this.y = Math.random() * (this.gameHeight - this.height); //y軸の初期位置
-    this.radian = 0;
-    this.radianSpeed = Math.random() * 0.2; //揺らぎのスピード
-    this.curve = Math.random() * 7; //揺らぎの範囲
+  constructor(game) {
+    this.game = game;
+    this.x = this.game.width; //canvas width
+    this.y = Math.random() * this.game.height;
+    this.radius = 20; //半径
+    this.isDeletable = false; //削除可能か
+    this.vx = Math.random() * 5 + 5; //速度(x軸)
+    this.angle = 0; //Math.sin(angle)で使用
+    this.curve = Math.random() * 5 + 5;
+    this.isCounted = false; //1つの敵で二回得点しないようにする。
   }
   update() {
-    this.x -= this.speed;
-    //Math.sin(this.radian)だけだと-1〜１の間しか動かない。this.curveをかけることでy軸の幅がthis.curve倍になる。
-    this.y += Math.sin(this.radian) * this.curve;
-    this.radian += this.radianSpeed; //揺らぎのスピード
-    if (this.x + this.width < 0) this.x = this.gameWidth;
+    this.x -= this.vx; //左へ
+    this.y += Math.sin(this.angle) * this.curve; //上下
+    this.angle += 0.12; //角度を加算
+
+    //左端に行ったらisDeletableをtrueにする
+    if (this.x < 0 - this.radius) this.isDeletable = true;
+
+    //衝突
+    const dx = this.x - this.game.player.x; //敵とplayerのx軸の差
+    const dy = this.y - this.game.player.y; //敵とplayerのy軸の差
+    this.distance = Math.sqrt(dx * dx + dy * dy); //敵とplayerの距離を計算(this.distanceは斜辺)
+    if (this.distance < this.radius + this.game.player.radius) {
+      this.game.isGameOver = true;
+    }
+
+    //得点
+    if (!this.isCounted && this.x < this.game.player.x) {
+      this.game.score++;
+      // console.log(`${this.game.score}`);
+
+      this.isCounted = true; //1つの敵で二回得点しないようにする。
+    }
   }
-  draw(context) {
-    context.fillStyle = "blue";
-    context.fillRect(this.x, this.y, this.width, this.height);
+  draw(ctx) {
+    ctx.fillStyle = "blue";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.closePath();
   }
 }
