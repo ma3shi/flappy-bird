@@ -5,12 +5,15 @@ window.addEventListener("load", function () {
   canvas.height = 400; //cssと同じ
 
   class Game {
-    constructor(ctx, width, height) {
-      this.player = new Player();
+    constructor(ctx, canvasWidth, canvasHeight) {
+      this.player = new Player(this);
       this.ctx = ctx;
-      this.width = width;
-      this.height = height;
+      this.width = canvasWidth;
+      this.height = canvasHeight;
       this.isPressSpace = false; //spaceを押したか
+      this.radian = 0; //Math.sin()にいれる角度
+      this.score = 0;
+      this.speed = 2;
     }
     update() {
       this.player.update();
@@ -20,7 +23,8 @@ window.addEventListener("load", function () {
     }
   }
   class Player {
-    constructor() {
+    constructor(game) {
+      this.game = game;
       this.x = 150;
       this.y = 200;
       this.vy = 0; // velocity 速度
@@ -29,21 +33,33 @@ window.addEventListener("load", function () {
       this.weight = 1; //flapしない限り常にプレイヤーを引き落とす力
     }
     update() {
-      // playerのbottomがcanvasを超えたらplayerがcanvasに接地する状態にして、速度も0にする
-      if (this.y > canvas.height - this.height) {
-        this.y = canvas.height - this.height; //(3)
+      // playerのbottomがcanvasからplayerの高さの3倍を超えたらplayerがその位置に接地する状態にして、速度も0にする
+      if (this.y > canvas.height - this.height * 3) {
+        this.y = canvas.height - this.height * 3;
         this.vy = 0;
+      } else {
+        //(1.flap無し)vyはweight分増えていく。
+        //(2.flap有り)vyは-1。vy=-2(vy)+1(weight)=-1
+        this.vy += this.weight;
+        this.y += this.vy;
       }
-      //if文の条件に当てはまった場合も(1)(2)でyはweightだけ増加するが、次のupdateで再び条件に当てはまりyは(3)に戻るのでyが増加し続けることは無い。
-      this.vy += this.weight; //(1)vy increase weight
-      this.y += this.vy; //(2)yはvy分増えていくので落下速度は速くなる
+
+      // top + players height
+      if (this.y < 0 + this.height) {
+        this.y = 0 + this.height;
+        this.vy = 0; //速度を0にする
+      }
+
+      //急なストップを避けるためtopからplayerの高さ3倍以上の距離がある時しかflapできない。
+      if (this.game.isPressSpace && this.y > this.height * 3) this.flap();
     }
     draw() {
       ctx.fillStyle = "red";
       ctx.fillRect(this.x, this.y, this.width, this.height);
     }
     flap() {
-      this.vy = -2; //playerは上へ
+      //if条件this.y>に当てはまった場合,this.y=になるので,次のupdateではelseに当てはまる。flapならvy=-2(vy)+1(weight)=-1となり,上へ。
+      this.vy -= 2; //playerは上へ
     }
   }
 
@@ -59,6 +75,7 @@ window.addEventListener("load", function () {
     game.update();
     game.draw();
     requestAnimationFrame(animation);
+    game.radian += 0.12;
   }
   //引数に何も入れないと最初がundefinedでNaNになってしまう
   animation(0);
@@ -66,10 +83,10 @@ window.addEventListener("load", function () {
   window.addEventListener("keydown", function (e) {
     // console.log(e);
     if (e.code === "Space") {
-      isPressSpace = true;
+      game.isPressSpace = true;
     }
   });
   window.addEventListener("keyup", function (e) {
-    if (e.code === "Space") isPressSpace = false;
+    if (e.code === "Space") game.isPressSpace = false;
   });
 });
