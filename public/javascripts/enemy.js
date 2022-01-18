@@ -42,6 +42,7 @@ export default class Enemy {
     // 敵とplayerの距離　< 敵とプレイヤーの半径の合計
     if (this.distance < this.radius + this.game.player.radius) {
       this.game.isGameOver = true; //ゲームオーバー
+      this.game.inputScore.value = this.game.score; //スコアをファーム内に代入
     }
 
     //得点

@@ -16,6 +16,7 @@ export default class Game {
     this.enemyInterval = 500; //敵を作成する間隔
     this.enemyTimer = 0; //次の敵を作成するまでの累積時間
     this.score = 0; //スコア
+    this.inputScore = document.getElementById("score"); //送信用スコア
     this.isGameOver = false; //ゲームオーバーかどうか
     this.gameOverSound = document.createElement("audio"); //ゲームオーバー音
     this.gameOverSound.src = "../sounds/gameover.mp3"; //ゲームオーバー音
