@@ -43,6 +43,7 @@ export default class Enemy {
     if (this.distance < this.radius + this.game.player.radius) {
       this.game.isGameOver = true; //ゲームオーバー
       this.game.inputScore.value = this.game.score; //スコアをファーム内に代入
+      this.game.modal.classList.remove("hidden"); //モーダルウィンドウ表示
     }
 
     //得点

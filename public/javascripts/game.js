@@ -20,6 +20,7 @@ export default class Game {
     this.isGameOver = false; //ゲームオーバーかどうか
     this.gameOverSound = document.createElement("audio"); //ゲームオーバー音
     this.gameOverSound.src = "../sounds/gameover.mp3"; //ゲームオーバー音
+    this.modal = document.getElementById("modal"); //モーダルウインドウ
   }
 
   //アップデート
