@@ -6,20 +6,19 @@ window.addEventListener("load", function () {
 
   class Game {
     constructor(ctx, canvasWidth, canvasHeight) {
-      this.player = new Player(this);
       this.ctx = ctx;
       this.width = canvasWidth;
       this.height = canvasHeight;
       this.isPressSpace = false; //spaceを押したか
-      this.radian = 0; //Math.sin()にいれる角度
+
       this.score = 0;
       this.speed = 2;
     }
     update() {
-      this.player.update();
+      player.update();
     }
     draw() {
-      this.player.draw();
+      player.draw();
     }
   }
   class Player {
@@ -30,12 +29,20 @@ window.addEventListener("load", function () {
       this.vy = 0; // velocity 速度
       this.width = 20;
       this.height = 20;
+      this.radian = 0; //Math.sin()にいれる角度
       this.weight = 1; //flapしない限り常にプレイヤーを引き落とす力
     }
     update() {
+      //cycles endlessly between -1 and 1 over and over
+      //Math.sin(radian)によって-1~1を繰り返している
+      //radianを変更することで繰り返しのスピード調整
+      //* 20をすることで揺らぎ幅を調整
+      let curve = Math.sin(this.radian) * 20;
       // playerのbottomがcanvasからplayerの高さの3倍を超えたらplayerがその位置に接地する状態にして、速度も0にする
-      if (this.y > canvas.height - this.height * 3) {
-        this.y = canvas.height - this.height * 3;
+      //not sit down from the bottom
+      //curveがあることでcanvas.height - this.height * 3の位置からcurveの範囲(-20と20の間)を行ったり来たりする
+      if (this.y > canvas.height - this.height * 3 + curve) {
+        this.y = canvas.height - this.height * 3 + curve;
         this.vy = 0;
       } else {
         //(1.flap無し)vyはweight分増えていく。
@@ -51,7 +58,8 @@ window.addEventListener("load", function () {
       }
 
       //急なストップを避けるためtopからplayerの高さ3倍以上の距離がある時しかflapできない。
-      if (this.game.isPressSpace && this.y > this.height * 3) this.flap();
+      if (game.isPressSpace && this.y > this.height * 3) this.flap();
+      this.radian += 0.12;
     }
     draw() {
       ctx.fillStyle = "red";
@@ -62,7 +70,7 @@ window.addEventListener("load", function () {
       this.vy -= 2; //playerは上へ
     }
   }
-
+  const player = new Player();
   const game = new Game(ctx, canvas.width, canvas.height);
   let lastTime = 0; //直前の時間
   //Animation Loop
@@ -75,7 +83,6 @@ window.addEventListener("load", function () {
     game.update();
     game.draw();
     requestAnimationFrame(animation);
-    game.radian += 0.12;
   }
   //引数に何も入れないと最初がundefinedでNaNになってしまう
   animation(0);
