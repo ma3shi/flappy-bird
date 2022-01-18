@@ -5,8 +5,14 @@
     <link rel="stylesheet" href="/stylesheets/game-style.css" />
   </head>
   <body>
-    <h1>Game</h1>
     <canvas id="canvas"></canvas>
+    <form id="modal" method="post" action="/results">
+      <label for="username" class="label">名前を入力</label>
+      <input type="text" id="username" name="username" />
+
+      <input type="hidden" id="score" name="score" value="100" />
+      <button type="submit">登録</button>
+    </form>
     <script type="module" src="javascripts/script.js"></script>
   </body>
 </html>

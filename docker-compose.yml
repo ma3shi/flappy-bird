@@ -17,3 +17,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: flappy_bird
+    volumes:
+      - flappy-bird-data:/var/lib/postgresql/data
+volumes:
+  flappy-bird-data:
+    external: true

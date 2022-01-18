@@ -5,10 +5,14 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var helmet = require("helmet");
 
+// モデルの読み込み
+var Result = require("./models/result");
+Result.sync();
+
 //モジュールを読み込む
 var indexRouter = require("./routes/index");
-
 var gameRouter = require("./routes/game");
+var resultsRouter = require("./routes/results");
 
 var app = express();
 app.use(helmet());
@@ -25,8 +29,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //パスに登録
 app.use("/", indexRouter);
-
 app.use("/game", gameRouter);
+app.use("/results", resultsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
