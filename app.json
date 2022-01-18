@@ -1,0 +1,7 @@
+{
+  "name": "flappy-bird",
+  "description": "フラッピーバード",
+  "logo": "",
+  "keywords": ["node"],
+  "image": "heroku/nodejs"
+}
